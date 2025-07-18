@@ -26,6 +26,19 @@ services:
     networks:
       - langconnect-network
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: langconnect-ollama
+    restart: always
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - langconnect-network
+
   api:
     build:
       context: .
@@ -35,6 +48,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      ollama:
+        condition: service_started
     ports:
       - "8080:8080"
     env_file:
@@ -49,6 +64,10 @@ services:
       # Additional settings
       POSTGRES_SSLMODE: disable  # For development environment
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      # Ollama settings
+      USE_OLLAMA_EMBEDDINGS: ${USE_OLLAMA_EMBEDDINGS:-false}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
       # Allow all localhost origins
       ALLOW_ORIGINS: '["http://localhost:3000", "http://localhost:8080", "http://localhost", "http://127.0.0.1:3000", "http://127.0.0.1:8080", "http://127.0.0.1"]'
     volumes:
@@ -86,6 +105,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  ollama_data:
     driver: local
 
 networks:

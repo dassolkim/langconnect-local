@@ -210,7 +210,7 @@ class LangConnectClient:
 
 
 # Initialize client (will be updated with valid token on startup)
-client = LangConnectClient(API_BASE_URL, "")
+client = LangConnectClient(API_BASE_URL, SUPABASE_JWT_SECRET)
 
 
 @mcp.tool

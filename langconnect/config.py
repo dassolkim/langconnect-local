@@ -17,9 +17,21 @@ else:
 
 def get_embeddings() -> Embeddings:
     """Get the embeddings instance based on the environment."""
-    from langchain_openai import OpenAIEmbeddings
-
-    return OpenAIEmbeddings(model="text-embedding-3-small")
+    # Check if we should use Ollama instead of OpenAI
+    use_ollama = env("USE_OLLAMA_EMBEDDINGS", cast=str, default="false").lower() == "true"
+    
+    if use_ollama:
+        from langchain_ollama import OllamaEmbeddings
+        ollama_model = env("OLLAMA_EMBEDDING_MODEL", cast=str, default="nomic-embed-text")
+        ollama_base_url = env("OLLAMA_BASE_URL", cast=str, default="http://localhost:11435")
+        
+        return OllamaEmbeddings(
+            model=ollama_model,
+            base_url=ollama_base_url
+        )
+    else:
+        from langchain_openai import OpenAIEmbeddings
+        return OpenAIEmbeddings(model="text-embedding-3-small")
 
 
 DEFAULT_EMBEDDINGS = get_embeddings()

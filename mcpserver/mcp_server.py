@@ -462,7 +462,7 @@ async def multi_query(question: str) -> str:
 
     try:
         # Initialize LLM
-        llm = ChatOpenAI(temperature=0, api_key=OPENAI_API_KEY)
+        llm = ChatOpenAI(temperature=0, api_key=OPENAI_API_KEY) # local model logic 추가
 
         # Create prompt template
         query_prompt = PromptTemplate(

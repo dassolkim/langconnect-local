@@ -187,6 +187,74 @@ make down
    make logs
    ```
 
+## 🤖 Ollama Integration
+
+### Using Local Ollama for Embeddings
+
+This project supports using local Ollama models for embeddings instead of OpenAI API, which can reduce costs and improve privacy.
+
+#### Quick Setup
+
+1. **Setup Ollama and pull embedding model**
+   ```bash
+   make ollama-setup
+   ```
+
+2. **Configure environment variables**
+   ```bash
+   # Add to your .env file
+   USE_OLLAMA_EMBEDDINGS=true
+   OLLAMA_BASE_URL=http://localhost:11435
+   OLLAMA_EMBEDDING_MODEL=nomic-embed-text
+   ```
+
+3. **Restart services**
+   ```bash
+   make restart
+   ```
+
+#### Manual Setup
+
+1. **Start Ollama service**
+   ```bash
+   docker compose up -d ollama
+   ```
+
+2. **Pull embedding model**
+   ```bash
+   make ollama-pull
+   # or manually:
+   # docker exec langconnect-ollama ollama pull nomic-embed-text
+   ```
+
+3. **Configure and restart**
+   ```bash
+   # Set USE_OLLAMA_EMBEDDINGS=true in .env
+   make restart
+   ```
+
+#### Available Ollama Embedding Models
+
+- `nomic-embed-text` (recommended) - High-quality embeddings
+- `all-minilm` - Lightweight model
+- `mxbai-embed-large` - Large model for better quality
+
+#### Switching Between OpenAI and Ollama
+
+To switch back to OpenAI:
+```bash
+# Set in .env file
+USE_OLLAMA_EMBEDDINGS=false
+make restart
+```
+
+To switch to Ollama:
+```bash
+# Set in .env file
+USE_OLLAMA_EMBEDDINGS=true
+make restart
+```
+
 ## 🤖 MCP Integration
 
 ### Automated Setup
@@ -306,7 +374,7 @@ In the Inspector:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `OPENAI_API_KEY` | OpenAI API key for embeddings | Yes |
+| `OPENAI_API_KEY` | OpenAI API key for embeddings | Yes (if not using Ollama) |
 | `SUPABASE_URL` | Supabase project URL | Yes |
 | `SUPABASE_KEY` | Supabase anon public key | Yes |
 | `NEXTAUTH_SECRET` | NextAuth.js secret key | Yes |
@@ -318,6 +386,14 @@ In the Inspector:
 | `POSTGRES_PASSWORD` | PostgreSQL password | No |
 | `POSTGRES_DB` | PostgreSQL database name | No |
 | `SSE_PORT` | MCP SSE server port (default: 8765) | No |
+
+### 🤖 Ollama Configuration (Optional)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `USE_OLLAMA_EMBEDDINGS` | Use Ollama for embeddings instead of OpenAI | false |
+| `OLLAMA_BASE_URL` | Ollama server URL | http://localhost:11435 |
+| `OLLAMA_EMBEDDING_MODEL` | Ollama embedding model name | nomic-embed-text |
 
 
 ## 👥 Contributors
